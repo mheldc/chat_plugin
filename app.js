@@ -2,73 +2,71 @@ var express     = require('express');
 var app         = express();
 var server      = require('http').createServer(app);
 var io          = require('socket.io')(server);
+var http				= require('http');
 
 app.set('port',process.env.PORT || 3000);
 app.use(express.static(__dirname + '/public'));
 
 // routing
 app.get('/', function (req, res) {
-  // Authentication
-  
+// Authentication
+console.log(res.statusCode);
   res.sendfile(__dirname + '/public/client.html');
 });
 
-// usernames which are currently connected to the chat
-var usernames = {};
-
-// rooms which are currently available in chat
-var rooms = ['room1','room2','room3'];
-
-io.sockets.on('connection', function (socket) {
-	// when the client emits 'adduser', this listens and executes
-	socket.on('adduser', function(data){
-        console.log('User : ' + data.username + ' connects to room ' + data.channel);
-		// store the username in the socket session for this client
-		socket.username = data.username;
-		// store the room name in the socket session for this client
-		socket.room = data.channel;
-		// add the client's username to the global list
-		usernames[data.username] = data.username;
-		// send client to room 1
-		socket.join(data.channel);
-		// echo to client they've connected
-		socket.emit('updatechat', 'SERVER', 'you have connected to ' + data.channel);
-		// echo to room 1 that a person has connected to their room
-		socket.broadcast.to(data.channel).emit('updatechat', 'SERVER', data.username + ' has connected to this room');
-		socket.emit('updaterooms', rooms, data.channel);
-	});
-
-	// when the client emits 'sendchat', this listens and executes
-	socket.on('sendchat', function (data) {
-        console.log(socket.username + ' is sending a message.');
-		// we tell the client to execute 'updatechat' with 2 parameters
-		io.sockets.in(socket.room).emit('updatechat', socket.username, data);
-	});
-
-	socket.on('switchRoom', function(newroom){
-		// leave the current room (stored in session)
-		socket.leave(socket.room);
-		// join new room, received as function parameter
-		socket.join(newroom);
-		socket.emit('updatechat', 'SERVER', 'you have connected to '+ newroom);
-		// sent message to OLD room
-		socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username+' has left this room');
-		// update socket session room title
-		socket.room = newroom;
-		socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username+' has joined this room');
-		socket.emit('updaterooms', rooms, newroom);
-	});
-
-	// when the user disconnects.. perform this
-	socket.on('disconnect', function(){
-		// remove the username from global usernames list
-		delete usernames[socket.username];
-		// update list of users in chat, client-side
-		io.sockets.emit('updateusers', usernames);
-		// echo globally that this client has left
-		socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
-		socket.leave(socket.room);
-	});
+io.sockets.on('connection', function(socket)
+{
+				var uservalidated = false;
+				socket.on('auth_user', function(ud){
+								
+								var options = {
+																host:'54.255.176.250',
+																path:'http://54.255.176.250/authenticate?access='+ud.accesscd+'&user='+ud.userid
+															};
+								
+								http.get(options, function(res){
+												res.statusCode;
+												res.setEncoding('utf8');
+												res.on('data', function(chunk){
+													var JSONobj = JSON.parse(chunk);
+																if(JSONobj['status'] == 200 && JSONobj['code'] == 'user_authenticated'){
+																				uservalidated = true;
+																}
+												});
+								}).on('error', function(e){
+									console.log('Got an error : ' + e.message);
+								});
+								
+								console.log('User ' + ud.username + ' joins in channel ' + ud.cid);
+								socket.join(ud.cid);
+								io.in(ud.cid).emit('allow-chat-input',{allow: uservalidated, cid: ud.cid});
+								if (ud.username.indexOf('Guest') < 0) {
+												io.in(ud.cid).emit('update-ui', {msgtype: 'notification', user: ud.username, msg: 'You have successfully connected to Channel ' + ud.cid, cid:ud.cid});		
+								} else {
+												io.in(ud.cid).emit('update-ui', {msgtype: 'notification', user: ud.username, msg: 'Welcome ' + ud.username + ' to Channel ' + ud.cid, cid:ud.cid});
+								}
+								
+								
+				});
+				
+				socket.on('send-gm', function(ud){
+								console.log(ud.username + ' is sending a message : [' + ud.msg + '] in channel ' + ud.cid);
+								io.in(ud.cid).emit('update-ui', {msgtype: 'chatmessage', user: ud.username, msg: ud.msg, uavatar: ud.uavatar, cid:ud.cid});
+				});
+				
+				socket.on('send-pm', function(ud){
+						
+				});
+				
+				socket.on('leave-room', function(ud){
+						
+				});
+				
+				socket.on('disconnect', function(ud){
+								socket.broadcast.emit('update-ui', 'SERVER', socket.uname + ' leaves the chatroom');
+								socket.leave(ud.cid);
+				});
+				
 });
 
 server.listen(app.get('port'), function(){
