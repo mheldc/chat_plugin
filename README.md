@@ -86,6 +86,5 @@ Note : Make sure that the server has nodejs installed before executing the comma
 	            $('#chatholder').initChatBox([Channel_info],[User_info]);
 	        });
 	   </script>
-           ```
    
 
