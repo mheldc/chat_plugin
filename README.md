@@ -1,4 +1,4 @@
-chat_plugin
+# Chat Plugin
 ===========
 Installation:
 
@@ -34,8 +34,4 @@ On frontend/client:
 	$(function(){
             $('#chatholder').initChatBox([Channel-to-join],[Username],[Token]);
         });
-   </script>
-
-
-
-
+   </script
