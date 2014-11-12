@@ -3,6 +3,8 @@
 Installation:
 
 1. Deploy the followng files/folders on the server.
+2. 
+
 
 app.js
 gchat.js
