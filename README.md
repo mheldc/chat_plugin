@@ -68,7 +68,7 @@ Note : Make sure that the server has nodejs installed before executing the comma
 	            </td>
 	        </tr>
 	    </script>
-	        ```
+	
 	        
 	For : Prompt input of Channel and Username
 	   ```html
