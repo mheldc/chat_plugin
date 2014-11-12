@@ -69,7 +69,7 @@ Note : Make sure that the server has nodejs installed before executing the comma
 	        
 	For : Prompt input of Channel and Username
 	   ```html
-	   <scripts type="text/javascript">
+	   <script type="text/javascript">
 		$(function(){
 	            $('#chatholder').initChatBox(prompt('Keyin Channel'),prompt('Keyin User'),'%%@&&#%$*%%');
 	        });
@@ -78,7 +78,7 @@ Note : Make sure that the server has nodejs installed before executing the comma
 	   
 	For : Passing parameters to plugin
 	   ```html
-	   <scripts type="text/javascript">
+	   <script type="text/javascript">
 		$(function(){
 	            $('#chatholder').initChatBox([Channel-to-join],[Username],[Token]);
 	        });
