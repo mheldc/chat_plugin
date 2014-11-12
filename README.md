@@ -80,7 +80,7 @@ Note : Make sure that the server has nodejs installed before executing the comma
 	   ```html
 	   <script type="text/javascript">
 		$(function(){
-	            $('#chatholder').initChatBox([Channel-to-join],[Username],[Token]);
+	            $('#chatholder').initChatBox([Channel_info],[User_info]);
 	        });
 	   </script>
            ```
