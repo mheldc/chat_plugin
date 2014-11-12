@@ -82,7 +82,7 @@ Note : Make sure that the server has nodejs installed before executing the comma
 		$(function(){
 	            $('#chatholder').initChatBox([Channel-to-join],[Username],[Token]);
 	        });
-	   </script
+	   </script>
            ```
    
 
