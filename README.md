@@ -1,6 +1,8 @@
 # Chat Plugin
-===========
+
 Installation:
+
+1. Deploy the followng files/folders on the server.
 
 app.js
 gchat.js
