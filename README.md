@@ -3,13 +3,16 @@
 # Installation:
 
 1. Deploy the followng files/folders on the server.
-   a. bin/*
-   b. node_modules/*
-   c. public/*
-   d. routes/*
-   e. views/*
-   f. app.js
-   g. package.json
+  <ul>
+   <li> bin/* </li>
+   <li> node_modules/* </li>
+   <li> public/* </li>
+   <li> routes/* </li>
+   <li> views/* </li>
+   <li> app.js </li>
+   <li> package.json </li>
+  </ul>
+
 2. Run the app by executing "node app.js"
 
 Note : Make sure that the server has nodejs installed before executing the command.
